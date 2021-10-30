@@ -9,8 +9,25 @@
  */
 
 import java.util.Scanner;
+    
+    class Ponto{
+        public double x;
+        public double y;
+
+        public Ponto(double x, double y){
+            this.x = x;
+            this.y = y;
+        }
+
+        public void atualizar(double x, double y){
+            this.x = x;
+            this.y = y;
+        }
+    }
 
 public class ClosestPointsBruteForce{
+
+
 
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Força Bruta, cuja complexidade 
@@ -18,7 +35,7 @@ public class ClosestPointsBruteForce{
      * @param double[][] pontos, int quantPontos
      * @return double 
      */
-    public static void CalcularParMaisProximoFB(double[][] pontos, int quantPontos){
+    public static void CalcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
 
         // Impossível calcular menor distância se |conjunto de pontos| < 2
         if(quantPontos < 2)
@@ -27,16 +44,14 @@ public class ClosestPointsBruteForce{
                  
             double menor = Math.pow( 
                             (
-                                Math.pow(pontos[1][0] - pontos[0][0], 2) + Math.pow(pontos[1][1] - pontos[0][1], 2)
+                                Math.pow(pontos[1].x - pontos[0].x, 2) + Math.pow(pontos[1].y - pontos[0].y, 2)
                             ),
                         0.5);
 
             // Variável auxiiar para armazenar calculo de distância 
             double distancia;
-            double x1 = pontos[0][0];
-            double x2 = pontos[1][0];
-            double y1 = pontos[0][1];
-            double y2 = pontos[1][1];
+            Ponto p1 = new Ponto(pontos[0].x, pontos[0].y);
+            Ponto p2 = new Ponto(pontos[1].x, pontos[1].y);
 
             // Estrutura de repetição dupla para calcular a distância entre todos
             // os pontos do connjunto de pontos recebido como parâmetro O(n^2)
@@ -46,7 +61,7 @@ public class ClosestPointsBruteForce{
                     // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
                     distancia = Math.pow( 
                             (
-                                Math.pow(pontos[j][0] - pontos[i][0], 2) + Math.pow(pontos[j][1] - pontos[i][1], 2)
+                                Math.pow(pontos[j].x - pontos[i].x, 2) + Math.pow(pontos[j].y - pontos[i].y, 2)
                             ),
                         0.5); 
                     if(distancia < menor){
@@ -55,16 +70,16 @@ public class ClosestPointsBruteForce{
                         menor = distancia;
 
                         // Atualizar ponto 1
-                        x1 = pontos[i][0], y1 = pontos[i][1];
+                        p1.atualizar(pontos[i].x, pontos[i].y);
                         // Atualizar ponto 2
-                        x2 = pontos[j][0], y2 = pontos[j][1];
+                        p2.atualizar(pontos[j].x, pontos[j].y);
                     }
                 }
             }
 
             System.out.println( "Menor distancia: " + menor);
-            System.out.print( "Pontos: [" + "(" + x1 + ", " + y1 + ")");
-            System.out.println( "; " + "(" + x2 + ", " + y2 + ")]");
+            System.out.print( "Pontos: [" + "(" + p1.x + ", " + p1.y + ")");
+            System.out.println( "; " + "(" + p2.x + ", " + p2.y + ")]");
         }
     }
     
@@ -75,11 +90,7 @@ public class ClosestPointsBruteForce{
         System.out.print("Quantidade de pontos: ");
         int quantPontos = leitor.nextInt();
 
-        // Matriz para amazenar pontos
-        // Ponto 1  2  3  4 
-        //     X [] [] [] []
-        //     Y [] [] [] []
-        double[][] pontos = new double[quantPontos][2];
+        Ponto[] pontos = new Ponto[quantPontos];
 
         for(int i = 0; i < quantPontos; i++){
             System.out.print("Valor x ponto [" + (i + 1) + "]: ");
@@ -90,8 +101,7 @@ public class ClosestPointsBruteForce{
 
             System.out.println("Ponto[" + (i + 1) + "]: (" + x + ", " + y + ") \n" );
 
-            pontos[i][0] = x;
-            pontos[i][1] = y;
+            pontos[i] = new Ponto(x, y);
         }          
         CalcularParMaisProximoFB(pontos, quantPontos);
     }
