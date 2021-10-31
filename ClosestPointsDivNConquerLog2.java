@@ -4,8 +4,8 @@
  *   Tarcila Fernanda Resende da Silva
  * Disciplina: Projeto e Análise de Algoritmos
  * Professor: Silvio Jamil
- * Questao: Par de pontos mais próximos - Força Bruta
- * Complexidade: O(n^2)
+ * Questao: Par de pontos mais próximos - Divisão e Conquista
+ * Complexidade: O(nlog^2 n)
  */
 
 import java.util.Scanner;
