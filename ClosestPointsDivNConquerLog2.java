@@ -42,17 +42,17 @@ public class ClosestPointsDivNConquerLog2{
         Ponto[] metade1 = new Ponto[tamMet1 + 1];
         Ponto[] metade2 = new Ponto[tamMet2 + 1];
 
-        // Copiando metade1 da pontos
+        // Copiando metade1 dos pontos
         for(int i = 0; i < tamMet1; i++){
             metade1[i] = pontos[init + i];
         }
         
-        // Copiando metade2 da pontos
+        // Copiando metade2 dos pontos
         for(int j = 0; j < tamMet2; j++){
             metade2[j] = pontos[meio + j + 1];
         }
 
-        // Evitar comparações caso um vertor seja copiado inteiramente 
+        // Evitar comparações caso um vetor seja copiado inteiramente 
         // antes do outro durante a intercalacao
         // Ultima posicao = infinito, logo ela nunca sera escolhida
         metade1[tamMet1] = new Ponto(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -76,13 +76,12 @@ public class ClosestPointsDivNConquerLog2{
 
    /* Metodo recursivo merge sort
     * O metodo divide um problema maior (pontos) em problemas menores
-    * dividido a pontos em vario sub pontos ate atingir um tamanho muito pequeno,
+    * dividindo os pontos em varios sub pontos ate atingir um tamanho muito pequeno,
     * que o programa consiga ordenar, depois volta recursivamente ordernando os problemas
     * menores resolvidos.
     * Metodo mergesort -> chama logn vezes o metodo merge que e o n, sendo n o tamanho da pontos
     * Complexidade  O(n logn)
-    * @param int* pontos, int init, int fim
-    * @return int contador de trocas em todas intercalacoes
+    * @param int* pontos, int init, int fim, boolean isToOrdByX
     */
     static void mergeSort(Ponto[] pontos, int init, int fim, boolean isToOrdByX){
         // Base da recursao
@@ -100,9 +99,9 @@ public class ClosestPointsDivNConquerLog2{
 
 
     /* Método para calcular menor distância entre pares de pontos
-     * utilizando uma abordagem de Força Bruta, cuja complexidade 
-     * é O(n^2)
-     * @param double[][] pontos, int quantPontos
+     * utilizando uma abordagem de Divisão e conquista, cuja complexidade 
+     * é O(nlog^2 n)
+     * @param Ponto[] pontos, int quantPontos
      * @return double 
      */
     public static void CalcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
