@@ -4,7 +4,7 @@
  *   Tarcila Fernanda Resende da Silva
  * Disciplina: Projeto e Análise de Algoritmos
  * Professor: Silvio Jamil
- * Questao: Par de pontos mais próximos - Divisão e Conquista
+ * Questão: Par de pontos mais próximos - Divisão e Conquista
  * Complexidade: O(nlog^2 n)
  */
 
@@ -63,10 +63,11 @@ public class ClosestPointsDivNConquerLog2{
         // Variavel para armazenar intercalacao ordenada no verto pontos
         int i = init;
 
-        // Ordenacao por intercalacao
+        // Ordenação por intercalação
         for(m1 = 0, m2 = 0; i <= fim ; i++){
+            // Aramazenar menor valor na sequencia
+            // Ordenação é feita em relação a X ou Y dependendo do booleano recebido como paramentro
             if(isToOrdByX ? metade2[m2].x < metade1[m1].x : metade2[m2].y < metade1[m1].y)
-                //Aramazenar menor valor na sequencia
                 pontos[i] =  metade2[m2++];
             else
                 pontos[i] = metade1[m1++]; 
@@ -97,6 +98,121 @@ public class ClosestPointsDivNConquerLog2{
         }
     }
 
+    /* Método para calcular menor distância entre pares de pontos
+     * utilizando uma abordagem de Força Bruta, cuja complexidade 
+     * é O(n^2)
+     * @param Ponto[][] pontos, int quantPontos
+     * @return double 
+     */
+    public static double calcularMenorDistancia(Ponto[] pontos, int quantPontos){
+
+        double menor = Math.pow( 
+                (
+                    Math.pow(pontos[1].x - pontos[0].x, 2) + Math.pow(pontos[1].y - pontos[0].y, 2)
+                ),
+            0.5);
+
+        // Variável auxiiar para armazenar calculo de distância 
+        double distancia;
+        Ponto p1 = new Ponto(pontos[0].x, pontos[0].y);
+        Ponto p2 = new Ponto(pontos[1].x, pontos[1].y);
+
+        // Estrutura de repetição dupla para calcular a distância entre todos
+        // os pontos do connjunto de pontos recebido como parâmetro O(n^2)
+        for(int i = 1; i < quantPontos; i++){
+            for(int j = i + 1; j < quantPontos; j++){
+                // Calculo de distância entre pontos pela fórmula:
+                // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
+                distancia = Math.pow( 
+                        (
+                            Math.pow(pontos[j].x - pontos[i].x, 2) + Math.pow(pontos[j].y - pontos[i].y, 2)
+                        ),
+                    0.5); 
+                if(distancia < menor){
+                    // Atulizar valores caso nova distância calulada
+                    // for menor que a anterior
+                    menor = distancia;
+ 
+                    // Atualizar ponto 1
+                    p1.atualizar(pontos[i].x, pontos[i].y);
+                    // Atualizar ponto 2
+                    p2.atualizar(pontos[j].x, pontos[j].y);
+                }
+            }
+        }
+        return menor;
+    }
+    
+    public static double calcularMenorDistanciaFaixa(Ponto[] pontos, int quantPontos, double menor){
+        // Ordenando pontos em relação ao eixo Y
+        mergeSort(pontos, quantPontos, 0, false);
+        double menorDist = menor;
+
+        for(int i = 1; i < quantPontos; i++){
+            for(int j = i + 1; j < quantPontos && (pontos[j].y - pontos[i].y) < menor; j++){
+                // Calculo de distância entre pontos pela fórmula:
+                // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
+                menorDist = Math.pow( 
+                        (
+                            Math.pow(pontos[j].x - pontos[i].x, 2) + Math.pow(pontos[j].y - pontos[i].y, 2)
+                        ),
+                    0.5); 
+                if(menorDist < menor){
+                    // Atulizar valores caso nova distância calulada
+                    // for menor que a anterior
+                    menor = menorDist;
+                }
+            }
+        }
+        return menor;
+        
+    }
+    
+    /* Método para calcular menor distancia entre dois pontos
+     * utilizando uma abordagem de divisão e conquista
+     * @param Ponto[] pontos, int quantPontos
+     * @return double menor distancia 
+     */
+    static double encontrarParesMaisProximos(Ponto[] pontos, int quantPontos){
+        // Calcular distancia por força bruta quando vertor conter de 2 a 3 pontos
+        if(quantPontos < 4){
+            return calcularMenorDistancia(pontos, quantPontos);
+        }
+        
+        int meio = quantPontos/2;
+        int tamDir = quantPontos - meio;
+
+        // Separando vetor ponto em duas metades
+        Ponto[] esq = new Ponto[meio];
+        Ponto[] dir = new Ponto[tamDir];
+
+        for(int i = 0; i < meio; i++)
+            esq[i] = pontos[i];
+
+        for(int i = 0; i < tamDir; i++)
+            dir[i] = pontos[meio + i];
+
+        // Calculando menor distancia de cada metade recursivamente
+        double menorDir = encontrarParesMaisProximos(dir, meio);
+        double menorEsq = encontrarParesMaisProximos(dir, tamDir);
+
+        // Selecionando menor distancia entre as duas metades para
+        // ser a faixa que irá considerar os pontos próximos do meio
+        // que terão as distâncias calculadas
+        double faixa = menorDir < menorEsq ? menorDir : menorEsq;
+
+        Ponto[] pontosNaFaixa = new Ponto[quantPontos];
+        int pf = 0; // Variavel para armazenar quantidade de pontos dentro da faixa
+
+        for(int i = 0; i < quantPontos; i++){
+           if(pontos[i].x - pontos[meio].x < faixa)
+             pontosNaFaixa[pf++] = pontos[i];
+        }
+        
+        double menorDistFaixa = calcularMenorDistanciaFaixa(pontosNaFaixa, pf, faixa);
+        return faixa < menorDistFaixa ? faixa : menorDistFaixa;
+    }
+
 
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Divisão e conquista, cuja complexidade 
@@ -104,52 +220,16 @@ public class ClosestPointsDivNConquerLog2{
      * @param Ponto[] pontos, int quantPontos
      * @return double 
      */
-    public static void CalcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
-
+    public static double calcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
         // Impossível calcular menor distância se |conjunto de pontos| < 2
         if(quantPontos < 2)
             System.out.println("Impossível calcular menor distância!");
         else{   
-                 
-            double menor = Math.pow( 
-                            (
-                                Math.pow(pontos[1].x - pontos[0].x, 2) + Math.pow(pontos[1].y - pontos[0].y, 2)
-                            ),
-                        0.5);
-
-            // Variável auxiiar para armazenar calculo de distância 
-            double distancia;
-            Ponto p1 = new Ponto(pontos[0].x, pontos[0].y);
-            Ponto p2 = new Ponto(pontos[1].x, pontos[1].y);
-
-            // Estrutura de repetição dupla para calcular a distância entre todos
-            // os pontos do conjunto de pontos recebido como parâmetro O(n^2)
-            for(int i = 1; i < quantPontos; i++){
-                for(int j = i + 1; j < quantPontos; j++){
-                    // Calculo de distância entre pontos pela fórmula:
-                    // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
-                    distancia = Math.pow( 
-                            (
-                                Math.pow(pontos[j].x - pontos[i].x, 2) + Math.pow(pontos[j].y - pontos[i].y, 2)
-                            ),
-                        0.5); 
-                    if(distancia < menor){
-                        // Atulizar valores caso nova distância calulada
-                        // for menor que a anterior
-                        menor = distancia;
-
-                        // Atualizar ponto 1
-                        p1.atualizar(pontos[i].x, pontos[i].y);
-                        // Atualizar ponto 2
-                        p2.atualizar(pontos[j].x, pontos[j].y);
-                    }
-                }
-            }
-
-            System.out.println( "Menor distancia: " + menor);
-            System.out.print( "Pontos: [" + "(" + p1.x + ", " + p1.y + ")");
-            System.out.println( "; " + "(" + p2.x + ", " + p2.y + ")]");
+            // Ordenando vetor de pontos em relação ao eixo X
+            mergeSort(pontos, 0, quantPontos - 1, true);                 
+            return encontrarParesMaisProximos(pontos, quantPontos);
         }
+        return -1;
     }
     
     public static void main(String[] args){
@@ -172,10 +252,7 @@ public class ClosestPointsDivNConquerLog2{
 
             pontos[i] = new Ponto(x, y);
         }          
-       // CalcularParMaisProximoFB(pontos, quantPontos);
-        mergeSort(pontos, 0, quantPontos - 1, true);
-
-        for(int i = 0; i < quantPontos; i++)
-             pontos[i].printPonto();
+        System.out.println("Menor distancia = " + calcularParMaisProximoFB(pontos, quantPontos));
+        
     }
 }
