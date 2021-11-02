@@ -4,7 +4,7 @@
  *   Tarcila Fernanda Resende da Silva
  * Disciplina: Projeto e Análise de Algoritmos
  * Professor: Silvio Jamil
- * Questao: Par de pontos mais próximos - Força Bruta
+ * Questão: Par de pontos mais próximos - Força Bruta
  * Complexidade: O(n^2)
  */
 
@@ -23,6 +23,10 @@ import java.util.Scanner;
             this.x = x;
             this.y = y;
         }
+
+        public void printPonto(){
+            System.out.println("(" + this.x + ", " + this.y + ")");
+        }
     }
 
 public class ClosestPointsBruteForce{
@@ -32,10 +36,10 @@ public class ClosestPointsBruteForce{
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Força Bruta, cuja complexidade 
      * é O(n^2)
-     * @param double[][] pontos, int quantPontos
+     * @param Ponto[] pontos, int quantPontos
      * @return double 
      */
-    public static void CalcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
+    public static double CalcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
 
         // Impossível calcular menor distância se |conjunto de pontos| < 2
         if(quantPontos < 2)
@@ -55,15 +59,16 @@ public class ClosestPointsBruteForce{
 
             // Estrutura de repetição dupla para calcular a distância entre todos
             // os pontos do connjunto de pontos recebido como parâmetro O(n^2)
-            for(int i = 1; i < quantPontos; i++){
-                for(int j = i + 1; j < quantPontos; j++){
+            for(int i = 0; i < quantPontos; i++){
+                for(int j = i + 1; j < quantPontos; j++){                    
                     // Calculo de distância entre pontos pela fórmula:
                     // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
                     distancia = Math.pow( 
                             (
                                 Math.pow(pontos[j].x - pontos[i].x, 2) + Math.pow(pontos[j].y - pontos[i].y, 2)
                             ),
-                        0.5); 
+                        0.5);
+
                     if(distancia < menor){
                         // Atulizar valores caso nova distância calulada
                         // for menor que a anterior
@@ -80,7 +85,9 @@ public class ClosestPointsBruteForce{
             System.out.println( "Menor distancia: " + menor);
             System.out.print( "Pontos: [" + "(" + p1.x + ", " + p1.y + ")");
             System.out.println( "; " + "(" + p2.x + ", " + p2.y + ")]");
+            return menor;
         }
+        return -1;
     }
     
     public static void main(String[] args){

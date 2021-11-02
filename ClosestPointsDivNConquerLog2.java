@@ -119,7 +119,7 @@ public class ClosestPointsDivNConquerLog2{
 
         // Estrutura de repetição dupla para calcular a distância entre todos
         // os pontos do connjunto de pontos recebido como parâmetro O(n^2)
-        for(int i = 1; i < quantPontos; i++){
+        for(int i = 0; i < quantPontos; i++){
             for(int j = i + 1; j < quantPontos; j++){
                 // Calculo de distância entre pontos pela fórmula:
                 // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
@@ -148,7 +148,7 @@ public class ClosestPointsDivNConquerLog2{
         mergeSort(pontos, quantPontos, 0, false);
         double menorDist = menor;
 
-        for(int i = 1; i < quantPontos; i++){
+        for(int i = 0; i < quantPontos; i++){
             for(int j = i + 1; j < quantPontos && (pontos[j].y - pontos[i].y) < menor; j++){
                 // Calculo de distância entre pontos pela fórmula:
                 // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
