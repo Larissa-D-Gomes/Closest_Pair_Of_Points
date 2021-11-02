@@ -124,7 +124,7 @@ public class ClosestPointsDivNConquerLog2{
             Ponto p2 = new Ponto(pontos[1].x, pontos[1].y);
 
             // Estrutura de repetição dupla para calcular a distância entre todos
-            // os pontos do connjunto de pontos recebido como parâmetro O(n^2)
+            // os pontos do conjunto de pontos recebido como parâmetro O(n^2)
             for(int i = 1; i < quantPontos; i++){
                 for(int j = i + 1; j < quantPontos; j++){
                     // Calculo de distância entre pontos pela fórmula:
