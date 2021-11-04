@@ -29,6 +29,32 @@ class Ponto{
     }
 }
 
+class ParPontos{
+    public Ponto ponto1;
+    public Ponto ponto2;
+    public double distancia;
+
+    public ParPontos(Ponto ponto1, Ponto ponto2, double distancia){
+        this.ponto1 = ponto1;
+        this.ponto2 = ponto2;
+        this.distancia = distancia;
+    }
+
+    public void atualizar(Ponto ponto1, Ponto ponto2, double distancia){
+        this.ponto1 = ponto1;
+        this.ponto2 = ponto2;
+        this.distancia = distancia;
+    }
+
+    public void print(){
+        System.out.println("Distância: " + distancia);
+        System.out.println("Par de pontos: ");
+        System.out.println("\t(" + ponto1.x + ", " + ponto1.y + ")");
+        System.out.println("\t(" + ponto2.x + ", " + ponto2.y + ")");
+    }
+}
+
+
 public class ClosestPointsDivNConquerLog2{
 
     static void merge(Ponto[] pontos, int init, int meio, int fim, boolean isToOrdByX){
@@ -104,7 +130,7 @@ public class ClosestPointsDivNConquerLog2{
      * @param Ponto[][] pontos, int quantPontos
      * @return double 
      */
-    public static double calcularMenorDistancia(Ponto[] pontos, int quantPontos){
+    public static ParPontos calcularMenorDistancia(Ponto[] pontos, int quantPontos){
 
         double menor = Math.pow( 
                 (
@@ -140,31 +166,40 @@ public class ClosestPointsDivNConquerLog2{
                 }
             }
         }
-        return menor;
+        return new ParPontos(p1, p2, menor);
     }
     
-    public static double calcularMenorDistanciaFaixa(Ponto[] pontos, int quantPontos, double menor){
+    public static ParPontos calcularMenorDistanciaFaixa(Ponto[] pontos, int quantPontos, ParPontos menor){
         // Ordenando pontos em relação ao eixo Y
         mergeSort(pontos, quantPontos, 0, false);
-        double menorDist = menor;
+        double menorDist = menor.distancia;
+        double calc = menor.distancia;
 
+        Ponto p1 = new Ponto(menor.ponto1.x, menor.ponto1.y);
+        Ponto p2 = new Ponto(menor.ponto2.x, menor.ponto2.y);
+        
         for(int i = 0; i < quantPontos; i++){
-            for(int j = i + 1; j < quantPontos && (pontos[j].y - pontos[i].y) < menor; j++){
+            for(int j = i + 1; j < quantPontos && (pontos[j].y - pontos[i].y) < menor.distancia; j++){
                 // Calculo de distância entre pontos pela fórmula:
                 // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
-                menorDist = Math.pow( 
+                calc = Math.pow( 
                         (
                             Math.pow(pontos[j].x - pontos[i].x, 2) + Math.pow(pontos[j].y - pontos[i].y, 2)
                         ),
                     0.5); 
-                if(menorDist < menor){
+                if(calc < menorDist){
                     // Atulizar valores caso nova distância calulada
                     // for menor que a anterior
-                    menor = menorDist;
+                    menorDist = calc;
+
+                    // Atualizar ponto 1
+                    p1.atualizar(pontos[i].x, pontos[i].y);
+                    // Atualizar ponto 2
+                    p2.atualizar(pontos[j].x, pontos[j].y);
                 }
             }
         }
-        return menor;
+        return new ParPontos(p1, p2, menorDist);
         
     }
     
@@ -173,7 +208,7 @@ public class ClosestPointsDivNConquerLog2{
      * @param Ponto[] pontos, int quantPontos
      * @return double menor distancia 
      */
-    static double encontrarParesMaisProximos(Ponto[] pontos, int quantPontos){
+    static ParPontos encontrarParesMaisProximos(Ponto[] pontos, int quantPontos){
         // Calcular distancia por força bruta quando vertor conter de 2 a 3 pontos
         if(quantPontos < 4){
             return calcularMenorDistancia(pontos, quantPontos);
@@ -193,24 +228,24 @@ public class ClosestPointsDivNConquerLog2{
             dir[i] = pontos[meio + i];
 
         // Calculando menor distancia de cada metade recursivamente
-        double menorEsq = encontrarParesMaisProximos(esq, meio);
-        double menorDir = encontrarParesMaisProximos(dir, tamDir);
+        ParPontos menorEsq = encontrarParesMaisProximos(esq, meio);
+        ParPontos menorDir = encontrarParesMaisProximos(dir, tamDir);
 
         // Selecionando menor distancia entre as duas metades para
         // ser a faixa que irá considerar os pontos próximos do meio
         // que terão as distâncias calculadas
-        double faixa = menorDir < menorEsq ? menorDir : menorEsq;
+        ParPontos faixa = menorDir.distancia < menorEsq.distancia ? menorDir : menorEsq;
 
         Ponto[] pontosNaFaixa = new Ponto[quantPontos];
         int pf = 0; // Variavel para armazenar quantidade de pontos dentro da faixa
 
         for(int i = 0; i < quantPontos; i++){
-           if(pontos[i].x - pontos[meio].x < faixa)
+           if(pontos[i].x - pontos[meio].x < faixa.distancia)
              pontosNaFaixa[pf++] = pontos[i];
         }
         
-        double menorDistFaixa = calcularMenorDistanciaFaixa(pontosNaFaixa, pf, faixa);
-        return faixa < menorDistFaixa ? faixa : menorDistFaixa;
+        ParPontos menorDistFaixa = calcularMenorDistanciaFaixa(pontosNaFaixa, pf, faixa);
+        return faixa.distancia < menorDistFaixa.distancia ? faixa : menorDistFaixa;
     }
 
 
@@ -220,7 +255,7 @@ public class ClosestPointsDivNConquerLog2{
      * @param Ponto[] pontos, int quantPontos
      * @return double 
      */
-    public static double calcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
+    public static ParPontos calcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
         // Impossível calcular menor distância se |conjunto de pontos| < 2
         if(quantPontos < 2)
             System.out.println("Impossível calcular menor distância!");
@@ -229,7 +264,7 @@ public class ClosestPointsDivNConquerLog2{
             mergeSort(pontos, 0, quantPontos - 1, true);                 
             return encontrarParesMaisProximos(pontos, quantPontos);
         }
-        return -1;
+        return null;
     }
     
     public static void main(String[] args){
@@ -252,7 +287,7 @@ public class ClosestPointsDivNConquerLog2{
 
             pontos[i] = new Ponto(x, y);
         }          
-        System.out.println("Menor distancia = " + calcularParMaisProximoFB(pontos, quantPontos));
+        calcularParMaisProximoFB(pontos, quantPontos).print();
         
     }
 }
