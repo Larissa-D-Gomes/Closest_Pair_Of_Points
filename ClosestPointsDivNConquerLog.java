@@ -5,7 +5,7 @@
  * Disciplina: Projeto e Análise de Algoritmos
  * Professor: Silvio Jamil
  * Questão: Par de pontos mais próximos - Divisão e Conquista
- * Complexidade: O(nlog^2 n)
+ * Complexidade: O(n logn)
  */
 
 import java.util.Scanner;
@@ -29,7 +29,7 @@ class Ponto{
     }
 }
 
-public class ClosestPointsDivNConquerLog2{
+public class ClosestPointsDivNConquerLog{
 
     static void merge(Ponto[] pontos, int init, int meio, int fim, boolean isToOrdByX){
 
@@ -145,7 +145,6 @@ public class ClosestPointsDivNConquerLog2{
     
     public static double calcularMenorDistanciaFaixa(Ponto[] pontos, int quantPontos, double menor){
         // Ordenando pontos em relação ao eixo Y
-        mergeSort(pontos, quantPontos, 0, false);
         double menorDist = menor;
 
         for(int i = 0; i < quantPontos; i++){
@@ -173,42 +172,54 @@ public class ClosestPointsDivNConquerLog2{
      * @param Ponto[] pontos, int quantPontos
      * @return double menor distancia 
      */
-    static double encontrarParesMaisProximos(Ponto[] pontos, int quantPontos){
+    static double encontrarParesMaisProximos(Ponto[] pontosX, Ponto[] pontosY, int quantPontos){
         // Calcular distancia por força bruta quando vertor conter de 2 a 3 pontos
         if(quantPontos < 4){
-            return calcularMenorDistancia(pontos, quantPontos);
+            return calcularMenorDistancia(pontosX, quantPontos);
         }
         
         int meio = quantPontos/2;
         int tamDir = quantPontos - meio;
 
+        Ponto m = pontosX[meio]; 
+
         // Separando vetor ponto em duas metades
-        Ponto[] esq = new Ponto[meio];
-        Ponto[] dir = new Ponto[tamDir];
+        Ponto[] pontosYEsq = new Ponto[meio];
+        Ponto[] pontosYDir = new Ponto[tamDir];
+        Ponto[] pontosXEsq = new Ponto[meio];
+        Ponto[] pontosXDir = new Ponto[tamDir];
+
+        int li = 0;
+        int ri = 0;
+        for(int i = 0; i < quantPontos; i++){
+            if((pontosY[i].x < m.x || (pontosY[i].x == m.x && pontosY[i].y < m.y)) && li < meio)
+                pontosYEsq[li++] = pontosY[i];
+            else
+                pontosYDir[ri++] = pontosY[i];
+        }
+
 
         for(int i = 0; i < meio; i++)
-            esq[i] = pontos[i];
+            pontosXEsq[i] = pontosX[i];
 
         for(int i = 0; i < tamDir; i++)
-            dir[i] = pontos[meio + i];
+            pontosXDir[i] = pontosX[meio + i];
 
-        // Calculando menor distancia de cada metade recursivamente
-        double menorEsq = encontrarParesMaisProximos(esq, meio);
-        double menorDir = encontrarParesMaisProximos(dir, tamDir);
-
+        double menorEsq = encontrarParesMaisProximos(pontosXEsq, pontosYEsq, meio);
+        double menorDir = encontrarParesMaisProximos(pontosXDir, pontosYDir, tamDir);
+        
         // Selecionando menor distancia entre as duas metades para
         // ser a faixa que irá considerar os pontos próximos do meio
         // que terão as distâncias calculadas
-        double faixa = menorDir < menorEsq ? menorDir : menorEsq;
+        double faixa = menorEsq < menorDir ? menorEsq : menorDir;
 
-        Ponto[] pontosNaFaixa = new Ponto[quantPontos];
+        Ponto[] pontosNaFaixa = new Ponto[quantPontos]; 
         int pf = 0; // Variavel para armazenar quantidade de pontos dentro da faixa
 
         for(int i = 0; i < quantPontos; i++){
-           if(pontos[i].x - pontos[meio].x < faixa)
-             pontosNaFaixa[pf++] = pontos[i];
-        }
-        
+           if(pontosY[i].x - m.x < faixa)
+             pontosNaFaixa[pf++] = pontosY[i];
+        }        
         double menorDistFaixa = calcularMenorDistanciaFaixa(pontosNaFaixa, pf, faixa);
         return faixa < menorDistFaixa ? faixa : menorDistFaixa;
     }
@@ -225,9 +236,20 @@ public class ClosestPointsDivNConquerLog2{
         if(quantPontos < 2)
             System.out.println("Impossível calcular menor distância!");
         else{   
+            Ponto[] pontosX = new Ponto[quantPontos];
+            Ponto[] pontosY = new Ponto[quantPontos];
+
+            for(int i = 0; i < quantPontos; i++){
+                pontosX[i] = pontos[i];
+                pontosY[i] = pontos[i];
+            }
+
             // Ordenando vetor de pontos em relação ao eixo X
-            mergeSort(pontos, 0, quantPontos - 1, true);                 
-            return encontrarParesMaisProximos(pontos, quantPontos);
+            mergeSort(pontosX, 0, quantPontos - 1, true);   
+            // Ordenando vetor de pontos em relação ao eixo Y
+            mergeSort(pontosY, 0, quantPontos - 1, false); 
+
+            return encontrarParesMaisProximos(pontosX, pontosY, quantPontos);
         }
         return -1;
     }
