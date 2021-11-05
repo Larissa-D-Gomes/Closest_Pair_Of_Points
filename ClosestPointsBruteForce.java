@@ -10,24 +10,24 @@
 
 import java.util.Scanner;
     
-    class Ponto{
-        public double x;
-        public double y;
+class Ponto{
+    public double x;
+    public double y;
 
-        public Ponto(double x, double y){
-            this.x = x;
-            this.y = y;
-        }
-
-        public void atualizar(double x, double y){
-            this.x = x;
-            this.y = y;
-        }
-
-        public void printPonto(){
-            System.out.println("(" + this.x + ", " + this.y + ")");
-        }
+    public Ponto(double x, double y){
+        this.x = x;
+        this.y = y;
     }
+
+    public void atualizar(double x, double y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public void printPonto(){
+        System.out.println("(" + this.x + ", " + this.y + ")");
+    }
+}
 
 public class ClosestPointsBruteForce{
 
@@ -35,7 +35,7 @@ public class ClosestPointsBruteForce{
 
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Força Bruta, cuja complexidade 
-     * é O(n^2)
+     * é O(n^2), sendo n = quantPontos
      * @param Ponto[] pontos, int quantPontos
      * @return double 
      */
@@ -45,7 +45,8 @@ public class ClosestPointsBruteForce{
         if(quantPontos < 2)
             System.out.println("Impossível calcular menor distância!");
         else{   
-                 
+            // Calculo de distância entre pontos pela fórmula:
+            // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)      
             double menor = Math.pow( 
                             (
                                 Math.pow(pontos[1].x - pontos[0].x, 2) + Math.pow(pontos[1].y - pontos[0].y, 2)
@@ -58,7 +59,7 @@ public class ClosestPointsBruteForce{
             Ponto p2 = new Ponto(pontos[1].x, pontos[1].y);
 
             // Estrutura de repetição dupla para calcular a distância entre todos
-            // os pontos do connjunto de pontos recebido como parâmetro O(n^2)
+            // os pontos do conjunto de pontos recebido como parâmetro O(n^2)
             for(int i = 0; i < quantPontos; i++){
                 for(int j = i + 1; j < quantPontos; j++){                    
                     // Calculo de distância entre pontos pela fórmula:
@@ -81,7 +82,7 @@ public class ClosestPointsBruteForce{
                     }
                 }
             }
-
+            // Print resultados
             System.out.println( "Menor distancia: " + menor);
             System.out.print( "Pontos: [" + "(" + p1.x + ", " + p1.y + ")");
             System.out.println( "; " + "(" + p2.x + ", " + p2.y + ")]");

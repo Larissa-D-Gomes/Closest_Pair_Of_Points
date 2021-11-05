@@ -5,7 +5,7 @@
  * Disciplina: Projeto e Análise de Algoritmos
  * Professor: Silvio Jamil
  * Questão: Par de pontos mais próximos - Divisão e Conquista
- * Complexidade: O(n logn)
+ * Complexidade: O(nlogn)
  */
 
 import java.util.Scanner;
@@ -58,7 +58,10 @@ class ParPontos{
 }
 
 public class ClosestPointsDivNConquerLog{
-
+    /* Método para ordernar vetores por intercalação
+     * Complexidade: O(n), sendo n = tamanho do vetor pontos
+     * @param Ponto[] pontos, int init, int meio, int fim, boolean isToOrdByX
+     */
     static void merge(Ponto[] pontos, int init, int meio, int fim, boolean isToOrdByX){
 
         // Tamanho dos vetores
@@ -80,9 +83,9 @@ public class ClosestPointsDivNConquerLog{
             metade2[j] = pontos[meio + j + 1];
         }
 
-        // Evitar comparações caso um vetor seja copiado inteiramente 
+        // Flag para evitar comparações caso um vetor seja copiado inteiramente 
         // antes do outro durante a intercalacao
-        // Ultima posicao = infinito, logo ela nunca sera escolhida
+        // Última posiçãoo = infinito, logo ela nunca sera escolhida
         metade1[tamMet1] = new Ponto(Double.MAX_VALUE, Double.MAX_VALUE);
         metade2[tamMet2] = new Ponto(Double.MAX_VALUE, Double.MAX_VALUE);
         
@@ -103,13 +106,12 @@ public class ClosestPointsDivNConquerLog{
         }
     }
 
-   /* Metodo recursivo merge sort
-    * O metodo divide um problema maior (pontos) em problemas menores
+   /* Método recursivo mergesort
+    * O método divide um problema maior (pontos) em problemas menores
     * dividindo os pontos em varios sub pontos ate atingir um tamanho muito pequeno,
-    * que o programa consiga ordenar, depois volta recursivamente ordernando os problemas
+    * que o programa consiga ordenar, depois retorna recursivamente ordernando os problemas
     * menores resolvidos.
-    * Metodo mergesort -> chama logn vezes o metodo merge que e o n, sendo n o tamanho da pontos
-    * Complexidade  O(n logn)
+    * Complexidade  O(nlogn)
     * @param int* pontos, int init, int fim, boolean isToOrdByX
     */
     static void mergeSort(Ponto[] pontos, int init, int fim, boolean isToOrdByX){
@@ -128,8 +130,8 @@ public class ClosestPointsDivNConquerLog{
 
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Força Bruta, cuja complexidade 
-     * é O(n^2)
-     * @param Ponto[][] pontos, int quantPontos
+     * é O(n^2), sendo n = quantPontos
+     * @param Ponto[] pontos, int quantPontos
      * @return ParPontos 
      */
     public static ParPontos calcularMenorDistancia(Ponto[] pontos, int quantPontos){
@@ -171,14 +173,25 @@ public class ClosestPointsDivNConquerLog{
         return new ParPontos(p1, p2, menor);
     }
     
-    public static ParPontos calcularMenorDistanciaFaixa(Ponto[] pontos, int quantPontos, ParPontos menor){
-        // Ordenando pontos em relação ao eixo Y
-        double calc = menor.distancia;
-        double menorDist = menor.distancia;
-        Ponto p1 = new Ponto(menor.ponto1.x, menor.ponto1.y);
-        Ponto p2 = new Ponto(menor.ponto2.x, menor.ponto2.y); 
+    /* Método força bruta para calcular menor distância entre pontos selecionados 
+     * por estarem dentro de uma determinada faixa do eixo x calculada.
+     * Complexidade O(n^2), sendo n = quantPontos
+     * @param Ponto[] pontos, int quantPontos, ParPontos faixa
+     * @return ParPontos resultado
+     */
+    public static ParPontos calcularMenorDistanciaFaixa(Ponto[] pontos, int quantPontos, ParPontos faixa){
+        
+        double calc = faixa.distancia;
+
+        // Iniciando variáveis com menor distância calculada até então que é igual a faixa
+        double menorDist = faixa.distancia;
+        Ponto p1 = new Ponto(faixa.ponto1.x, faixa.ponto1.y);
+        Ponto p2 = new Ponto(faixa.ponto2.x, faixa.ponto2.y); 
+        
+        // Estrutura de repetição dupla para calcular a distância entre todos
+        // os pontos do conjunto de pontos recebido como parâmetro O(n^2)
         for(int i = 0; i < quantPontos; i++){
-            for(int j = i + 1; j < quantPontos && (pontos[j].y - pontos[i].y) < menor.distancia; j++){
+            for(int j = i + 1; j < quantPontos && (pontos[j].y - pontos[i].y) < faixa.distancia; j++){
                 // Calculo de distância entre pontos pela fórmula:
                 // raizquadrada((pontojX - pontoiX)^2 + (pontojY - pontoiY)^2)
                 calc = Math.pow( 
@@ -202,19 +215,25 @@ public class ClosestPointsDivNConquerLog{
     }
     
     /* Método para calcular menor distancia entre dois pontos
-     * utilizando uma abordagem de divisão e conquista
+     * utilizando uma abordagem de divisão e conquista 
+     * complexidade nlogn, sendo n = quantPontos
      * @param Ponto[] pontos, int quantPontos
      * @return double menor distancia 
      */
     static ParPontos encontrarParesMaisProximos(Ponto[] pontosX, Ponto[] pontosY, int quantPontos){
         // Calcular distancia por força bruta quando vertor conter de 2 a 3 pontos
+        // Base da recursão
         if(quantPontos < 4){
             return calcularMenorDistancia(pontosX, quantPontos);
         }
-        
-        int meio = quantPontos/2;
-        int tamDir = quantPontos - meio;
 
+        // Definindo posição do ponto que irá ser a referência para
+        // a divisão do conjunto pontos entre esquerda e direita
+        int meio = quantPontos/2;
+        // Tamanho do vetor de pontos que estarão
+        // à direita
+        int tamDir = quantPontos - meio;
+        // Ponto central
         Ponto m = pontosX[meio]; 
 
         // Separando vetor ponto em duas metades
@@ -223,23 +242,33 @@ public class ClosestPointsDivNConquerLog{
         Ponto[] pontosXEsq = new Ponto[meio];
         Ponto[] pontosXDir = new Ponto[tamDir];
 
+        // Variáveis auxiliares para incrementar posições dos vetores
+        // pontosYEsq e pontosYDir
         int li = 0;
         int ri = 0;
+
+        // Separando vetor ordernado pelo eixo Y ao meio
+        // em relação ao eixo X
         for(int i = 0; i < quantPontos; i++){
+            // Pontos a esquerda -> eixo x menor que x do ponto central ou, caso o 
+            // x seja igual, se eixo y for menor que o do ponto central
             if((pontosY[i].x < m.x || (pontosY[i].x == m.x && pontosY[i].y < m.y)) && li < meio)
                 pontosYEsq[li++] = pontosY[i];
             else
-                pontosYDir[ri++] = pontosY[i];
+                pontosYDir[ri++] = pontosY[i]; // Pontos a direita -> eixo x menor que x do ponto central
         }
 
-
+        // Copiando metade da esquerda de pontos ordenados por X
         for(int i = 0; i < meio; i++)
             pontosXEsq[i] = pontosX[i];
-
+        // Copiando metade da direita de pontos ordenados por X
         for(int i = 0; i < tamDir; i++)
             pontosXDir[i] = pontosX[meio + i];
 
+        // Encontrando pares mais próximos de pontos a esquerda em relação ao ponto central
         ParPontos menorEsq = encontrarParesMaisProximos(pontosXEsq, pontosYEsq, meio);
+
+        // Encontrando pares mais próximos de pontos a direita em relação ao ponto central
         ParPontos menorDir = encontrarParesMaisProximos(pontosXDir, pontosYDir, tamDir);
         
         // Selecionando menor distancia entre as duas metades para
@@ -247,32 +276,40 @@ public class ClosestPointsDivNConquerLog{
         // que terão as distâncias calculadas
         ParPontos faixa = menorEsq.distancia < menorDir.distancia ? menorEsq : menorDir;
 
+        // Vetor para armazenar pontos dentro da faixa definida pela menor distância entre
+        // dois pontos calculada nos conjuntos de pontos da esquerda e direita
         Ponto[] pontosNaFaixa = new Ponto[quantPontos]; 
         int pf = 0; // Variavel para armazenar quantidade de pontos dentro da faixa
 
+        // Selecionando pontos da esquerda e direita que tem a distância em relação ao eixo X
+        // do ponto central menor que a faixa calculada
         for(int i = 0; i < quantPontos; i++){
            if(pontosY[i].x - m.x < faixa.distancia)
              pontosNaFaixa[pf++] = pontosY[i];
         }        
+        // Calculando menor distância entre pontos dentro da faixa
         ParPontos menorDistFaixa = calcularMenorDistanciaFaixa(pontosNaFaixa, pf, faixa);
+
         return faixa.distancia < menorDistFaixa.distancia ? faixa : menorDistFaixa;
     }
 
 
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Divisão e conquista, cuja complexidade 
-     * é O(nlog^2 n)
+     * é O(nlogn), sendo n = quantPontos
      * @param Ponto[] pontos, int quantPontos
-     * @return double 
+     * @return ParPontos resultado 
      */
     public static ParPontos calcularParMaisProximoFB(Ponto[] pontos, int quantPontos){
         // Impossível calcular menor distância se |conjunto de pontos| < 2
         if(quantPontos < 2)
             System.out.println("Impossível calcular menor distância!");
         else{   
+            // Vetores para armazenar pontos ordenados pelo eixo x e y 
             Ponto[] pontosX = new Ponto[quantPontos];
             Ponto[] pontosY = new Ponto[quantPontos];
 
+            // Copiando vetor pontos para vetores pontosX e pontosY
             for(int i = 0; i < quantPontos; i++){
                 pontosX[i] = pontos[i];
                 pontosY[i] = pontos[i];
@@ -285,7 +322,7 @@ public class ClosestPointsDivNConquerLog{
 
             return encontrarParesMaisProximos(pontosX, pontosY, quantPontos);
         }
-        return null;
+        return Pontos(new Ponto(), new Ponto(), -1.0);
     }
     
     public static void main(String[] args){
