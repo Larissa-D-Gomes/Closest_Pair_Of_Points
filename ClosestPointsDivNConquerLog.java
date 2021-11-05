@@ -218,7 +218,7 @@ public class ClosestPointsDivNConquerLog{
      * utilizando uma abordagem de divisão e conquista 
      * complexidade nlogn, sendo n = quantPontos
      * @param Ponto[] pontos, int quantPontos
-     * @return double menor distancia 
+     * @return ParPontos resultado
      */
     static ParPontos encontrarParesMaisProximos(Ponto[] pontosX, Ponto[] pontosY, int quantPontos){
         // Calcular distancia por força bruta quando vertor conter de 2 a 3 pontos
