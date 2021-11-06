@@ -130,7 +130,7 @@ public class ClosestPointsDivNConquerLog2{
     /* Método para calcular menor distância entre pares de pontos
      * utilizando uma abordagem de Força Bruta, cuja complexidade 
      * é O(n^2), sendo n = quantPontos
-     * @param Ponto[][] pontos, int quantPontos
+     * @param Ponto[] pontos, int quantPontos
      * @return ParPontos resultado 
      */
     public static ParPontos calcularMenorDistancia(Ponto[] pontos, int quantPontos){
